@@ -439,10 +439,6 @@ const Index = () => {
                     <Icon name="Mail" size={20} />
                     <span>kl171403@gmail.com</span>
                   </div>
-                  <div className="flex items-center gap-3 text-muted-foreground">
-                    <Icon name="MapPin" size={20} />
-                    <span>Москва, ул. Примерная, 123</span>
-                  </div>
                 </div>
               </div>
             </Card>
