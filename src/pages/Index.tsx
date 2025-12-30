@@ -66,11 +66,20 @@ const mockProducts: Product[] = [
 ];
 
 const Index = () => {
-  const [currentPage, setCurrentPage] = useState<'home' | 'catalog' | 'cart' | 'profile' | 'about'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'catalog' | 'cart' | 'profile' | 'about' | 'admin'>('home');
   const [searchQuery, setSearchQuery] = useState('');
   const [cart, setCart] = useState<{ product: Product; quantity: number }[]>([]);
+  const [products, setProducts] = useState<Product[]>(mockProducts);
+  
+  const [newProduct, setNewProduct] = useState({
+    name: '',
+    price: 0,
+    category: '',
+    image: '',
+    description: ''
+  });
 
-  const filteredProducts = mockProducts.filter(product =>
+  const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     product.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -113,9 +122,12 @@ const Index = () => {
       <header className="sticky top-0 z-50 bg-black text-white border-b border-white/10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <h1 className="text-2xl font-bold text-white cursor-pointer tracking-tight" onClick={() => setCurrentPage('home')}>
-              STORE
-            </h1>
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentPage('home')}>
+              <img src="https://cdn.poehali.dev/projects/fa9d9353-21d6-4d2f-9d10-99229f52fe1f/files/31376155-e564-4483-aa1f-7d9f4bbfab8d.jpg" alt="NLM" className="h-8 w-8 rounded" />
+              <h1 className="text-2xl font-bold text-white tracking-tight">
+                NLM
+              </h1>
+            </div>
             
             <nav className="hidden md:flex items-center gap-8">
               <button
@@ -141,6 +153,14 @@ const Index = () => {
                 }`}
               >
                 О магазине
+              </button>
+              <button
+                onClick={() => setCurrentPage('admin')}
+                className={`text-sm font-medium transition-colors hover:text-white ${
+                  currentPage === 'admin' ? 'text-white' : 'text-white/60'
+                }`}
+              >
+                Добавить товар
               </button>
             </nav>
 
@@ -192,7 +212,7 @@ const Index = () => {
             <div className="container mx-auto">
               <h3 className="text-3xl font-bold mb-12 text-center tracking-tight">Популярные товары</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {mockProducts.slice(0, 3).map((product) => (
+                {products.slice(0, 3).map((product) => (
                   <Card
                     key={product.id}
                     className="group overflow-hidden border border-white/10 bg-black text-white hover:border-white/30 transition-all duration-300"
@@ -445,9 +465,114 @@ const Index = () => {
         </main>
       )}
 
+      {currentPage === 'admin' && (
+        <main className="py-12 px-4 sm:px-6 lg:px-8">
+          <div className="container mx-auto max-w-2xl">
+            <h2 className="text-4xl font-bold mb-8 tracking-tight">Добавить товар</h2>
+            <Card className="p-8">
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const product: Product = {
+                  id: products.length + 1,
+                  ...newProduct
+                };
+                setProducts([...products, product]);
+                setNewProduct({
+                  name: '',
+                  price: 0,
+                  category: '',
+                  image: '',
+                  description: ''
+                });
+                setCurrentPage('catalog');
+              }} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Название товара</label>
+                  <Input
+                    required
+                    placeholder="Например: Беспроводные наушники"
+                    value={newProduct.name}
+                    onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Цена (₽)</label>
+                  <Input
+                    required
+                    type="number"
+                    placeholder="9990"
+                    value={newProduct.price || ''}
+                    onChange={(e) => setNewProduct({...newProduct, price: Number(e.target.value)})}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Категория</label>
+                  <Input
+                    required
+                    placeholder="Например: Электроника"
+                    value={newProduct.category}
+                    onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">URL изображения</label>
+                  <Input
+                    required
+                    placeholder="https://example.com/image.jpg"
+                    value={newProduct.image}
+                    onChange={(e) => setNewProduct({...newProduct, image: e.target.value})}
+                  />
+                  {newProduct.image && (
+                    <div className="mt-4 aspect-square w-full max-w-xs rounded-lg overflow-hidden bg-secondary/50">
+                      <img src={newProduct.image} alt="Предпросмотр" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Описание</label>
+                  <Input
+                    required
+                    placeholder="Краткое описание товара"
+                    value={newProduct.description}
+                    onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
+                  />
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <Button type="submit" className="flex-1 bg-black text-white hover:bg-black/90">
+                    <Icon name="Plus" size={20} className="mr-2" />
+                    Опубликовать товар
+                  </Button>
+                  <Button type="button" variant="outline" onClick={() => setCurrentPage('catalog')}>
+                    Отмена
+                  </Button>
+                </div>
+              </form>
+            </Card>
+
+            <Card className="mt-8 p-6 bg-secondary/30">
+              <h3 className="text-xl font-semibold mb-4 tracking-tight">Инструкция для продавцов</h3>
+              <div className="space-y-3 text-sm text-muted-foreground">
+                <p>✓ Заполните все поля формы выше</p>
+                <p>✓ Для изображения используйте прямую ссылку (URL) на фото товара</p>
+                <p>✓ Цена указывается в рублях без копеек</p>
+                <p>✓ После публикации товар сразу появится в каталоге</p>
+              </div>
+            </Card>
+          </div>
+        </main>
+      )}
+
       <footer className="bg-black text-white py-12 px-4 sm:px-6 lg:px-8 mt-20 border-t border-white/10">
         <div className="container mx-auto text-center">
-          <h3 className="text-2xl font-bold mb-4 tracking-tight">STORE</h3>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <img src="https://cdn.poehali.dev/projects/fa9d9353-21d6-4d2f-9d10-99229f52fe1f/files/31376155-e564-4483-aa1f-7d9f4bbfab8d.jpg" alt="NLM" className="h-10 w-10 rounded" />
+            <h3 className="text-2xl font-bold tracking-tight">NLM</h3>
+          </div>
           <p className="text-white/60 mb-6">
             Премиальные товары для профессионалов
           </p>
