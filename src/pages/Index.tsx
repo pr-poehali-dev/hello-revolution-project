@@ -195,11 +195,11 @@ const Index = () => {
         <main>
           <section className="py-20 px-4 sm:px-6 lg:px-8">
             <div className="container mx-auto text-center max-w-4xl">
-              <h2 className="text-5xl md:text-7xl font-bold mb-6 leading-tight tracking-tight">
-                Деловой стиль.<br />Безупречное качество.
+              <h2 className="text-5xl md:text-7xl font-bold mb-6 leading-tight tracking-tight uppercase">
+                Not Lost Money
               </h2>
               <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Премиальные товары для профессионалов, которые ценят качество и функциональность
+                If you miss out on the right product, you miss out on an opportunity.
               </p>
               <Button size="lg" onClick={() => setCurrentPage('catalog')} className="text-base px-8 bg-black text-white hover:bg-black/90 border border-black">
                 Смотреть каталог
